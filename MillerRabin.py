@@ -1,3 +1,6 @@
+from random import randrange
+
+
 def getSandT(n):
     # returns s and t from: n-1=2^(s) * t
 
@@ -17,14 +20,9 @@ def getSandT(n):
     return s, int(n)
 
 
-def iterations(s, t):
-    # we will iterate to check for all possible a
-    # we also know a should be a random number
-    return
-
-
 def computeRSME(a, t, n):
-    # computing repeated squaring modular exponentiation for a based on t
+    # computing modular exponentiation for a based on t
+    # this is pretty much pow(a,t,n)
     numberOfIterations = t
     result = 1
     while numberOfIterations > 0:
@@ -35,57 +33,70 @@ def computeRSME(a, t, n):
     return result
 
 
-def testMillerRabin(n):
+def checkSequence(a, s, t, n):
+    # this checks the sequence that looks like:
+    # a^t, a^(2*t), a^(2^2(t)), a^(2^(3) * (t)), ... , a^(2^(s) * (t))
+
+    # check if first number is 1 otherwise
+    # and save it as previous for later use
+
+    prev = pow(a, t, n)
+    if prev == 1 or prev == n - 1:
+        return 1
+
+    # going trough all values in the sequence
+    # checking if the current is 1 and previous is -1
+    repeatedSquare = 1
+    for i in range(s):
+        prev = prev * prev % n
+        if prev == n - 1:
+            return 1
+
+    # getting to this point means n is composite
+    return 0
+
+
+def testMillerRabin(n, k):
     # returns 1 if n is probably prime
     # returns 0 otherwise
 
-    # we will see if: n-1=2^(s) * t
-    # t is odd
-    if n == 2:
+    # cases <= 1 and even numbers
+
+    if n < 2:
+        return 0
+    if n == 2 or n == 3:
         return 1
     if n % 2 == 0:
         return 0
 
+    # we will see if: n-1=2^(s) * t
+    # t is odd
     s, t = getSandT(n)
 
-    print(f"s={s}")
-    print(f"t={t}")
-    print(f"2^t={computeRSME(2, t, n)}")
-    print(f"2^2*t={computeRSME(2, 2*t, n)}")
-    print(f"2^4*t={computeRSME(2, 4*t, n)}")
-    print(f"2^8*t={computeRSME(2, 8*t, n)}")
-    print(f"2^16*t={computeRSME(2, 16*t, n)}")
-    print()
+    # computing and checking sequence in Miller-Rabin test --> iterating k times
+    for i in range(k):
 
-    print(f"3^t={computeRSME(3, t, n)}")
-    print(f"3^2*t={computeRSME(3, 2*t, n)}")
-    print(f"3^4*t={computeRSME(3, 4*t, n)}")
-    print(f"3^8*t={computeRSME(3, 8*t, n)}")
-    print(f"3^16*t={computeRSME(3, 16*t, n)}")
-    print()
+        # a should be a random number such that: 1 < a < n - 1
+        # generating pseudo random a
+        a = randrange(2, n - 2)
 
-    print(f"5^t={computeRSME(5, t, n)}")
-    print(f"5^2*t={computeRSME(5, 2*t, n)}")
-    print(f"5^4*t={computeRSME(5, 4*t, n)}")
-    print(f"5^8*t={computeRSME(5, 8*t, n)}")
-    print(f"5^16*t={computeRSME(5, 16*t, n)}")
-    print()
+        if checkSequence(a, s, t, n) == 0:
+            # after checking we get: number is composite
+            return 0
 
-    print("acum alea cu 2 la puterea bla bla: ")
-    print(f"2^1={computeRSME(2, 1, n)}")
-    print(f"2^2={computeRSME(2, 2, n)}")
-    print(f"2^4={computeRSME(2, 4, n)}")
-
-    print(f"2^8={computeRSME(2, 8, n)}")
-    print(f"2^16={computeRSME(2, 16, n)}")
-    print(f"2^32={computeRSME(2, 32, n)}")
-
-    print(f"2^64={computeRSME(2, 64, n)}")
-    print(f"2^128={computeRSME(2, 128, n)}")
-    print(f"2^256={computeRSME(2, 256, n)}")
-
-    print(f"2^512={computeRSME(2, 512, n)}")
+    # after checking we get: number is probably prime
+    return 1
 
 
 # python MillerRabin.py
-testMillerRabin(2673)
+nums = 500
+iterations = 4
+print(f"Checking first {nums} numbers for primality: ")
+
+if testMillerRabin(2, iterations) == 1:
+    print(f"2 is prime!")
+
+
+for i in range(1, nums, 2):
+    if testMillerRabin(i, iterations) == 1:
+        print(f"{i} is prime!")
