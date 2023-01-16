@@ -286,6 +286,19 @@ def show_encrypted_message(msg):
     return r
 
 
+def get_input():
+    i = input()
+
+    for h in i:
+        if h not in alphabet:
+            print(
+                "Try another input, the valid alphabet is: _abcdefghijklmnopqrstuvwxyz"
+            )
+            i = get_input()
+            break
+    return i
+
+
 def RabinPCK():
     # demonstration of Miller-Rabin public key cryptosystem
     # Bob sends message to Alice
@@ -329,7 +342,8 @@ def RabinPCK():
     # Alice and Bob know each other's public keys (i.e. a_n and b_n)
     # Getting unicode value from user
     # it has to be between 0 and n-1
-    b_input_message = input("Bob, your message is: ")
+    print("Bob, your message is: ")
+    b_input_message = get_input()
 
     # encrypting Bob's message with Alice's public key
     encrypted_message = encrypt_message(b_input_message, a_n)
