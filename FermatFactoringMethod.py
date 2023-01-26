@@ -80,7 +80,7 @@ def fermatFactoringMethod(n):
         return prime2, prime1
 
 
-prime1, prime2 = fermatFactoringMethod(9699)  # vrem 7701
+prime1, prime2 = fermatFactoringMethod(9699)  
 
 print(f"The two factors are {prime1} and {prime2}")
 
